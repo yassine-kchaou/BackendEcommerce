@@ -16,13 +16,11 @@ res.status(404).json({ message: error.message });
 router.post('/', async (req, res) => {
 const nouvarticle = new Article(req.body)
 try {
-await nouvarticle.save();
-res.status(200).json(nouvarticle );
+const response=await nouvarticle.save();
+const articles = await Article.findById(response._id).populate("scategorieID")
+res.status(200).json(articles );
 } catch (error) {
 res.status(404).json({ message: error.message });
-
-
-
 }
 });
 // afficher la liste des articles par page
