@@ -1,4 +1,5 @@
 const express = require('express');
+
 const mongoose = require('mongoose');
 //pour acceder à la fichier .env
 const dotenv = require('dotenv');
@@ -12,6 +13,7 @@ const cors = require('cors')
 const app =express();
 
 dotenv.config()
+app.use(express.static(__dirname + '/'));
 app.use(express.json());
 
 app.use(cors())
