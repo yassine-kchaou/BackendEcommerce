@@ -6,21 +6,21 @@ const { verifyToken } = require('../middleware/verify-token');
 // const { uploadFile } = require('../middleware/uploadFile');
 const { authorizeRoles } = require('../middleware/authorizeRoles');
 // créer un nouvel article
-// router.post('/', uploadFile.single("imageart"),async (req, res) => {
-// const {reference,designation,prix,marque,qtestock,scategorieID} =
-// req.body
-// const imageart = req.file.filename
-// const nouvarticle = new Article({reference:reference,designation:designation,prix:prix,marque:marque,qtestock:qtestock,scategorieID:scategorieID,imageart:imageart})
-// try {
-//     await nouvarticle.save();
+router.post('/', async (req, res) => {
+const {reference,designation,prix,marque,qtestock,scategorieID,imageart} =
+req.body
+
+const nouvarticle = new Article({reference:reference,designation:designation,prix:prix,marque:marque,qtestock:qtestock,scategorieID:scategorieID,imageart:imageart})
+try {
+    await nouvarticle.save();
     
-//     res.status(200).json(nouvarticle );
-//     } catch (error) {
-//     res.status(404).json({ message: error.message });
-//     }
-// });
+    res.status(200).json(nouvarticle );
+    } catch (error) {
+    res.status(404).json({ message: error.message });
+    }
+});
 // afficher la liste des articles.
-router.get('/', verifyToken ,authorizeRoles("admin","visiteur","user") ,async (req, res, )=> {
+router.get('/', async (req, res, )=> {
 try {
 const articles = await Article.find({}, null, {sort: {'_id': -1}}).populate("scategorieID").exec();
 res.status(200).json(articles);

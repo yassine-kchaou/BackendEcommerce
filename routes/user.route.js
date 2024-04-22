@@ -4,6 +4,7 @@ const User = require("../models/user");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
+const { uploadFile } = require("../middleware/uploadfile");
 require("dotenv").config();
 
 var transporter = nodemailer.createTransport({
@@ -24,7 +25,7 @@ router.post("/forgot-password", (req, res) => {
       return res.send({ Status: "User not existed" });
     }
     const token = jwt.sign({ id: user._id }, "jwt_secret_key", {
-      expiresIn: "1d",
+      expiresIn: "1m",
     });
     var transporter = nodemailer.createTransport({
       service: "gmail",
@@ -42,7 +43,7 @@ router.post("/forgot-password", (req, res) => {
       subject: "Reset Password Link",
       html: `<center><h2>! thank you for registreting on our website</h2>
     <h4>please verify your email to procced.. </h4>
-    <a href="http://${req.headers.host}/api/users/reset_password/${user._id}/${token}">click here</a></center>`,
+    <a href="http://localhost:3000/reset_password/${user._id}/${token}">click here</a></center>`,
     };
     transporter.sendMail(mailOptions, function (error, info) {
       if (error) {
@@ -86,16 +87,24 @@ router.get("/", async (req, res) => {
   }
 });
 // créer un nouvel utilisateur
-router.post("/register", async (req, res) => {
+router.post("/register",async (req, res) => {
   try {
-    let { email, password, firstname, lastname } = req.body;
-    const user = await User.findOne({ email }); //find khaw donne un liste mais findOne donne un seul resultat
+    let { email,role, password, firstname, lastname, avatar } = req.body;
+    const user = await User.findOne({ email }); 
+    //find khaw donne un liste mais findOne donne un seul resultat
     if (user)
       return res
         .status(404)
         .send({ success: false, message: "User already exists" });
-
-    const newUser = new User({ email, password, firstname, lastname });
+    const newUser = new User({ 
+      email:email, 
+      password:password, 
+      role:role||"user",
+      firstname:firstname, 
+ 
+      lastname:lastname,
+      avatar:avatar||"https://res.cloudinary.com/dliykgknn/image/upload/v1709632004/image/imageonline-co-brightnessadjusted.png.png.png"
+    });
     const createdUser = await newUser.save();
     // Envoyer l'e-mail de confirmation de l'inscription
     var mailOption = {
@@ -179,7 +188,7 @@ router.post("/login", async (req, res) => {
 //Access Token
 const generateAccessToken = (user) => {
   return jwt.sign({ iduser: user._id, role: user.role }, process.env.SECRET, {
-    expiresIn: "60s",
+    expiresIn: "360s",
   });
 };
 // Refresh

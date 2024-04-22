@@ -31,7 +31,7 @@ router.get('/:categorieId',async(req, res)=>{
     try {
         const cat = await Categorie.findById(req.params.categorieId);
         
-        13
+        
         res.status(200).json(cat);
         } catch (error) {
         res.status(404).json({ message: error.message });
